@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sistema de Suporte - Chamados</title>
+  <style>
+    :root{/*--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#60a5fa;--success:#34d399;--danger:#fb7185*/}
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{margin:0;background:linear-gradient(180deg,#071021 0%,var(--bg) 100%);color:#e6eef6;padding:20px}
+    .wrap{max-width:1000px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:8px;background:#fff;padding:6px;display:inline-flex;align-items:center;justify-content:center}
+    .logo img{max-width:100%;max-height:100%;display:block}
+    h1{font-size:20px;margin:0}
+    .card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,.6)}
+    form{display:grid;grid-template-columns:1fr 220px;gap:10px}
+    input,select,textarea,button{font-size:14px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    textarea{min-height:80px;resize:vertical}
+    .controls{display:flex;gap:8px;flex-direction:column}
+    .btn{cursor:pointer;border:none;padding:10px;border-radius:8px}
+    .btn-primary{background:var(--accent);color:#04203a}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:12px;margin-top:14px}
+    .list{max-height:520px;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:10px}
+    .ticket{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.03)}
+    .meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .badge{padding:6px 8px;border-radius:999px;font-size:12px}
+    .status-open{background:rgba(96,165,250,0.12);color:var(--accent)}
+    .status-prog{background:rgba(255,193,7,0.08);color:#f59e0b}
+    .status-closed{background:rgba(52,211,153,0.08);color:var(--success)}
+    .small{font-size:13px;color:var(--muted)}
+    .filters{display:flex;gap:8px;align-items:center}
+    .rightcol{display:flex;flex-direction:column;gap:12px}
+    pre{white-space:pre-wrap;word-break:break-word;background:rgba(255,255,255,0.02);padding:10px;border-radius:8px}
+    .row{display:flex;gap:8px}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+    @media(max-width:900px){ form{grid-template-columns:1fr} .grid{grid-template-columns:1fr} .logo{width:40px;height:40px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" title="Logo do sistema">
+          <img src=data:image/png;base64,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yk9O7XwiSKulYdQMrMVvLikv/usmi6VxZNJxbNpxbI/j6LSjH4SfvrHKry4ahAL7Py5l3KjZlZFGfKCHmCFWIVYy0RJcPQN6hH4JQdoEFLS+JUvkgYi0EYZgUhC0y4rvsFR1WfI9VnyXSruYKOho7E//7cc9c5dKq7N6qZ9Par1JNCQaN1QR0fRZp0bGnHEbkzZmO25LXK6sV15DvH8Xqx90hfpp+7qwxApt/FXkxqSB1etXFtuFrS97j14LuNP+5uXw9Z4nxO8irmysL1fXyKbXDe70vSNBEuIPUVvH2Wixb2c0Ju1oLyAVSBVXSWOHcxvPcOst3Gb/dmV3249/x+cRt9u2HKuCOZD6qTsYx/Z2xorTxmbPhYHxo78tc27eEep3LAyHNFPdjonvcNTtccpj00O+cfIhDo7xXltj0gBKMxb7gWr9taedN6xZRi0RZro69qunjUp7UGlsTHuQydISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNISyNIS+B/GwB3b4v3KdwAAAABJRU5ErkJggg== alt="Logo">
+        </div>
+        <div>
+          <h1>Sistema de Suporte — Chamados (Protótipo)</h1>
+          <div class="small">Salve localmente / exporte para backup</div>
+        </div>
+      </div>
+      <div class="small">Protótipo — UI local</div>
+    </header>
+
+    <div class="card">
+      <form id="ticketForm">
+        <div>
+          <input id="title" placeholder="Título do chamado (ex: Erro no login)" required>
+          <textarea id="description" placeholder="Descrição detalhada do problema / passos para reproduzir" required></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input id="reporter" placeholder="Quem reportou (nome)" />
+            <input id="assignee" placeholder="Responsável" />
+          </div>
+        </div>
+
+        <div class="controls">
+          <select id="priority">
+            <option value="Baixa">Baixa</option>
+            <option value="Média" selected>Média</option>
+            <option value="Alta">Alta</option>
+            <option value="Crítica">Crítica</option>
+          </select>
+
+          <select id="status">
+            <option value="Aberto" selected>Aberto</option>
+            <option value="Em Progresso">Em Progresso</option>
+            <option value="Resolvido">Resolvido</option>
+          </select>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" type="submit">Criar Chamado</button>
+            <button class="btn btn-ghost" id="resetBtn" type="button">Limpar</button>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost" id="exportBtn" type="button">Exportar JSON</button>
+            <button class="btn btn-ghost" id="importBtn" type="button">Importar JSON</button>
+          </div>
+
+          <div style="margin-top:auto">
+            <label class="small">Tag de versão (Changelog)</label>
+            <div class="row">
+              <input id="versionTag" placeholder="ex: v1.1.0">
+              <button class="btn btn-primary" id="tagBtn" type="button">Gerar Changelog</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="grid">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="filters">
+              <select id="filterStatus"><option value="">Todos os status</option><option>Aberto</option><option>Em Progresso</option><option>Resolvido</option></select>
+              <select id="filterPriority"><option value="">Todas prioridades</option><option>Baixa</option><option>Média</option><option>Alta</option><option>Crítica</option></select>
+              <input id="search" placeholder="Buscar título / descrição / responsável">
+              <button class="btn btn-ghost" id="clearFilters">Limpar filtros</button>
+            </div>
+
+            <div class="small">Total: <span id="totalCount">0</span></div>
+          </div>
+
+          <div class="list card" id="ticketsList"></div>
+        </div>
+
+        <aside class="rightcol">
+          <div class="card">
+            <h3 style="margin:0 0 8px 0">Resumo Rápido</h3>
+            <div class="small">Chamados por status</div>
+            <div id="summary"></div>
+          </div>
+
+          <div class="card">
+            <h3 style="margin:0 0 8px 0">Changelog / Tags</h3>
+            <pre id="changelog">Nenhuma tag gerada.</pre>
+          </div>
+
+          <div class="card">
+            <h3 style="margin:0 0 8px 0">Import / Export</h3>
+            <div class="small">Exporta ou importa um arquivo JSON com todos os chamados.</div>
+            <input type="file" id="fileInput" style="display:none">
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <footer>Protótipo criado para atividades de manutenção/testes. Integre com backend para produção.</footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'suporte_chamados_v1';
+    const TAGS_KEY = 'suporte_chamados_tags_v1';
+    const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+    const save = (data)=>localStorage.setItem(STORAGE_KEY, JSON.stringify(data, null, 2));
+    const load = ()=> JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const saveTags = (t)=>localStorage.setItem(TAGS_KEY, JSON.stringify(t||[]));
+    const loadTags = ()=> JSON.parse(localStorage.getItem(TAGS_KEY)||'[]');
+
+    const form = document.getElementById('ticketForm');
+    const list = document.getElementById('ticketsList');
+    const totalCount = document.getElementById('totalCount');
+    const summary = document.getElementById('summary');
+    const changelog = document.getElementById('changelog');
+
+    function render(){
+      const data = load();
+      const fStatus = document.getElementById('filterStatus').value;
+      const fPriority = document.getElementById('filterPriority').value;
+      const q = document.getElementById('search').value.toLowerCase().trim();
+
+      const filtered = data.filter(t=>{
+        if(fStatus && t.status!==fStatus) return false;
+        if(fPriority && t.priority!==fPriority) return false;
+        if(q){
+          return (t.title+t.description+t.assignee+t.reporter).toLowerCase().includes(q);
+        }
+        return true;
+      });
+
+      list.innerHTML = '';
+      filtered.forEach(ticket=>{
+        const el = document.createElement('div'); el.className='ticket';
+        el.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <strong>${'${'}escapeHtml(ticket.title)}</strong>
+              <div class="small">#${'${'}ticket.id} • ${'${'}ticket.reporter||'—'} • ${'${'}new Date(ticket.createdAt).toLocaleString()}</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <select data-action="status" data-id="${'${'}ticket.id}">
+                <option ${'${'}ticket.status==='Aberto'?'selected':''}>Aberto</option>
+                <option ${'${'}ticket.status==='Em Progresso'?'selected':''}>Em Progresso</option>
+                <option ${'${'}ticket.status==='Resolvido'?'selected':''}>Resolvido</option>
+              </select>
+              <button data-action="edit" data-id="${'${'}ticket.id}" class="btn btn-ghost">Editar</button>
+              <button data-action="delete" data-id="${'${'}ticket.id}" class="btn btn-ghost">Apagar</button>
+            </div>
+          </div>
+          <div style="margin-top:8px">${'${'}escapeHtml(ticket.description)}</div>
+          <div class="meta">
+            <span class="badge ${'${'}badgeClass(ticket.status)}">${'${'}ticket.status}</span>
+            <span class="badge">Prioridade: ${'${'}ticket.priority}</span>
+            <span class="badge">Responsável: ${'${'}ticket.assignee||'—'}</span>
+          </div>
+        `;
+        list.appendChild(el);
+      });
+
+      totalCount.textContent = filtered.length;
+      renderSummary(data);
+      renderChangelog();
+    }
+
+    function badgeClass(status){
+      if(status==='Aberto') return 'status-open';
+      if(status==='Em Progresso') return 'status-prog';
+      return 'status-closed';
+    }
+
+    function renderSummary(data){
+      const counts = {Aberto:0,'Em Progresso':0,Resolvido:0};
+      data.forEach(t=>counts[t.status] = (counts[t.status]||0)+1);
+      summary.innerHTML = `
+        <div class="small">Aberto: ${'${'}counts['Aberto']}</div>
+        <div class="small">Em Progresso: ${'${'}counts['Em Progresso']}</div>
+        <div class="small">Resolvido: ${'${'}counts['Resolvido']}</div>
+        <div class="small">Total cham: ${'${'}data.length}</div>
+      `;
+    }
+
+    function renderChangelog(){
+      const tags = loadTags();
+      if(!tags.length) { changelog.textContent='Nenhuma tag gerada.'; return }
+      changelog.textContent = tags.map(t=>`${'${'}t.tag} — ${'${'}new Date(t.date).toLocaleString()}\\n${'${'}t.notes || 'Sem notas'}`).join('\\n\\n');
+    }
+
+    function escapeHtml(s){return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',\"'\":'&#39;'})[c])}
+
+    form.addEventListener('submit', e=>{
+      e.preventDefault();
+      const data = load();
+      const obj = { id: uid(), createdAt: Date.now() };
+      obj.title = document.getElementById('title').value;
+      obj.description = document.getElementById('description').value;
+      obj.reporter = document.getElementById('reporter').value;
+      obj.assignee = document.getElementById('assignee').value;
+      obj.priority = document.getElementById('priority').value;
+      obj.status = document.getElementById('status').value;
+      data.unshift(obj);
+      save(data);
+      form.reset();
+      render();
+      alert('Chamado criado com sucesso!');
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', ()=>form.reset());
+
+    const ticketsList = document.getElementById('ticketsList');
+    ticketsList.addEventListener('click', e=>{
+      const btn = e.target.closest('button');
+      if(!btn) return;
+      const action = btn.dataset.action; const id = btn.dataset.id;
+      if(action==='delete'){ if(confirm('Apagar chamado?')){ deleteTicket(id); } }
+      if(action==='edit'){ openEdit(id); }
+    });
+
+    ticketsList.addEventListener('change', e=>{
+      const sel = e.target.closest('select'); if(!sel) return;
+      const action = sel.dataset.action; const id = sel.dataset.id;
+      if(action==='status'){ updateStatus(id, sel.value); }
+    });
+
+    function deleteTicket(id){
+      let data = load(); data = data.filter(t=>t.id!==id); save(data); render();
+    }
+
+    function openEdit(id){
+      const data = load(); const t = data.find(x=>x.id===id); if(!t) return;
+      if(confirm('Abrir ticket para edição? O registro atual será removido e colocado no formulário.')){
+        deleteTicket(id);
+        document.getElementById('title').value = t.title || '';
+        document.getElementById('description').value = t.description || '';
+        document.getElementById('reporter').value = t.reporter || '';
+        document.getElementById('assignee').value = t.assignee || '';
+        document.getElementById('priority').value = t.priority || 'Média';
+        document.getElementById('status').value = t.status || 'Aberto';
+      }
+    }
+
+    function updateStatus(id, status){
+      const data = load(); const t = data.find(x=>x.id===id); if(!t) return;
+      t.status = status; save(data); render();
+    }
+
+    ['filterStatus','filterPriority','search'].forEach(id=>document.getElementById(id).addEventListener('input', render));
+    document.getElementById('clearFilters').addEventListener('click', ()=>{ document.getElementById('filterStatus').value=''; document.getElementById('filterPriority').value=''; document.getElementById('search').value=''; render(); });
+
+    document.getElementById('exportBtn').addEventListener('click', ()=>{
+      const data = load();
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download = `chamados_${new Date().toISOString().slice(0,10)}.json`; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('importBtn').addEventListener('click', ()=>document.getElementById('fileInput').click());
+    document.getElementById('fileInput').addEventListener('change', e=>{
+      const f = e.target.files[0]; if(!f) return; const reader = new FileReader(); reader.onload = ()=>{
+        try{ const parsed = JSON.parse(reader.result); if(!Array.isArray(parsed)) throw new Error('Formato inválido'); save(parsed); alert('Importação concluída'); render(); }
+        catch(err){ alert('Falha ao importar: '+err.message) }
+      }; reader.readAsText(f);
+    });
+
+    document.getElementById('tagBtn').addEventListener('click', ()=>{
+      const tag = document.getElementById('versionTag').value.trim(); if(!tag){ alert('Informe uma tag (ex: v1.1.0)'); return }
+      const notes = prompt('Notas do changelog (breve):');
+      const tags = loadTags(); tags.unshift({tag,notes,date:Date.now()}); saveTags(tags); renderChangelog(); document.getElementById('versionTag').value='';
+      alert('Tag gerada: '+tag);
+    });
+
+    if(!localStorage.getItem(STORAGE_KEY)){
+      const seed = [
+        {id:uid(),title:'Erro ao autenticar usuário',description:'Login falha com 500 quando email vazio',reporter:'Ana',assignee:'Lucas',priority:'Alta',status:'Aberto',createdAt:Date.now()-3600000},
+        {id:uid(),title:'Campo CPF aceita letras',description:'Validação front permite caracteres não numéricos',reporter:'João',assignee:'Marcia',priority:'Média',status:'Em Progresso',createdAt:Date.now()-7200000},
+      ]; save(seed);
+    }
+
+    render();
+  </script>
+</body>
+</html>
