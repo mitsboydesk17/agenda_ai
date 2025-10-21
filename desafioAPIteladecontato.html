@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testes Unitários - Validação de Formulário de Contato</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2a5298;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #2a5298;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+        }
+
+        .test-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #2a5298;
+            box-shadow: 0 0 0 2px rgba(42, 82, 152, 0.2);
+            outline: none;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .result {
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .valid {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .invalid {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .pass {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .fail {
+            color: #c62828;
+            font-weight: bold;
+        }
+
+        .error-list {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .error-item {
+            color: #c62828;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Testes Unitários - Validação de Formulário de Contato</h1>
+        
+        <div class="card">
+            <h2>Teste Manual da Função</h2>
+            <div class="test-section">
+                <p>Teste a função de validação do formulário de contato manualmente:</p>
+                <div class="test-controls">
+                    <div class="form-group">
+                        <label for="nomeInput">Nome Completo</label>
+                        <input type="text" id="nomeInput" placeholder="Seu nome completo">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailInput">E-mail</label>
+                        <input type="email" id="emailInput" placeholder="Seu e-mail">
+                    </div>
+                    <div class="form-group">
+                        <label for="assuntoInput">Assunto</label>
+                        <input type="text" id="assuntoInput" placeholder="Assunto da mensagem">
+                    </div>
+                    <div class="form-group">
+                        <label for="mensagemInput">Mensagem</label>
+                        <textarea id="mensagemInput" placeholder="Digite sua mensagem aqui..."></textarea>
+                    </div>
+                </div>
+                <button onclick="testarFormularioManual()">Testar Validação</button>
+                <button onclick="limparFormulario()">Limpar</button>
+                <div id="resultadoManual"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Testes Automatizados</h2>
+            <div class="test-section">
+                <p>Execute todos os casos de teste unitário baseados no formulário de contato:</p>
+                <button onclick="executarTodosTestes()">Executar Todos os Testes</button>
+                <table id="tabelaTestes">
+                    <thead>
+                        <tr>
+                            <th>CTU ID</th>
+                            <th>Descrição</th>
+                            <th>Dados de Teste</th>
+                            <th>Esperado</th>
+                            <th>Obtido</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabelaTestes">
+                        <!-- Os resultados dos testes serão inseridos aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Módulo de validação do formulário de contato
+        function validarFormularioContato(nome, email, assunto, mensagem) {
+            const erros = [];
+            
+            // Validar nome
+            if (typeof nome !== 'string') {
+                erros.push('Nome deve ser uma string');
+            } else if (nome.trim() === '') {
+                erros.push('Nome é obrigatório');
+            } else if (nome.length < 2) {
+                erros.push('Nome deve ter pelo menos 2 caracteres');
+            } else if (nome.length > 100) {
+                erros.push('Nome deve ter no máximo 100 caracteres');
+            }
+            
+            // Validar email
+            if (typeof email !== 'string') {
+                erros.push('Email deve ser uma string');
+            } else if (email.trim() === '') {
+                erros.push('Email é obrigatório');
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                erros.push('Email deve ter um formato válido');
+            } else if (email.length > 255) {
+                erros.push('Email deve ter no máximo 255 caracteres');
+            }
+            
+            // Validar assunto
+            if (typeof assunto !== 'string') {
+                erros.push('Assunto deve ser uma string');
+            } else if (assunto.trim() === '') {
+                erros.push('Assunto é obrigatório');
+            } else if (assunto.length < 5) {
+                erros.push('Assunto deve ter pelo menos 5 caracteres');
+            } else if (assunto.length > 100) {
+                erros.push('Assunto deve ter no máximo 100 caracteres');
+            }
+            
+            // Validar mensagem
+            if (typeof mensagem !== 'string') {
+                erros.push('Mensagem deve ser uma string');
+            } else if (mensagem.trim() === '') {
+                erros.push('Mensagem é obrigatória');
+            } else if (mensagem.length < 10) {
+                erros.push('Mensagem deve ter pelo menos 10 caracteres');
+            } else if (mensagem.length > 1000) {
+                erros.push('Mensagem deve ter no máximo 1000 caracteres');
+            }
+            
+            return {
+                valido: erros.length === 0,
+                erros: erros
+            };
+        }
+
+        // Função para testar formulário manualmente
+        function testarFormularioManual() {
+            const nome = document.getElementById('nomeInput').value;
+            const email = document.getElementById('emailInput').value;
+            const assunto = document.getElementById('assuntoInput').value;
+            const mensagem = document.getElementById('mensagemInput').value;
+            
+            const resultado = validarFormularioContato(nome, email, assunto, mensagem);
+            const resultadoDiv = document.getElementById('resultadoManual');
+            
+            if (resultado.valido) {
+                resultadoDiv.innerHTML = '<div class="result valid">Formulário VÁLIDO</div>';
+            } else {
+                let errosHTML = '<div class="result invalid">Formulário INVÁLIDO</div>';
+                errosHTML += '<div class="error-list">';
+                resultado.erros.forEach(erro => {
+                    errosHTML += `<div class="error-item">• ${erro}</div>`;
+                });
+                errosHTML += '</div>';
+                resultadoDiv.innerHTML = errosHTML;
+            }
+        }
+
+        // Função para limpar formulário
+        function limparFormulario() {
+            document.getElementById('nomeInput').value = '';
+            document.getElementById('emailInput').value = '';
+            document.getElementById('assuntoInput').value = '';
+            document.getElementById('mensagemInput').value = '';
+            document.getElementById('resultadoManual').innerHTML = '';
+        }
+
+        // Casos de teste baseados no formulário de contato
+        const casosTeste = [
+            // Particionamento de Equivalência - Casos Válidos
+            {
+                id: 'CTU-001',
+                descricao: 'P1 (Válido - Dados completos e corretos)',
+                dados: {
+                    nome: 'João Silva',
+                    email: 'joao@email.com',
+                    assunto: 'Dúvida sobre o sistema',
+                    mensagem: 'Gostaria de saber mais informações sobre como usar a plataforma.'
+                },
+                esperado: { valido: true, erros: [] }
+            },
+            
+            // Particionamento de Equivalência - Casos Inválidos
+            {
+                id: 'CTU-002',
+                descricao: 'P2 (Inválido - Tipo errado de dado)',
+                dados: {
+                    nome: 12345,
+                    email: 'email_invalido',
+                    assunto: 999,
+                    mensagem: ['mensagem', 'array']
+                },
+                esperado: { valido: false, erros: [
+                    'Nome deve ser uma string',
+                    'Email deve ter um formato válido',
+                    'Assunto deve ser uma string',
+                    'Mensagem deve ser uma string'
+                ]}
+            },
+            {
+                id: 'CTU-003',
+                descricao: 'P4 (Inválido - Campos vazios)',
+                dados: {
+                    nome: '',
+                    email: '',
+                    assunto: '',
+                    mensagem: ''
+                },
+                esperado: { valido: false, erros: [
+                    'Nome é obrigatório',
+                    'Email é obrigatório',
+                    'Assunto é obrigatório',
+                    'Mensagem é obrigatória'
+                ]}
+            },
+            
+            // Análise de Valor Limite - Nome
+            {
+                id: 'CTU-004',
+                descricao: 'AVL-1 Nome (Abaixo Min - 1 caractere)',
+                dados: {
+                    nome: 'A',
+                    email: 'teste@email.com',
+                    assunto: 'Assunto válido',
+                    mensagem: 'Mensagem válida com mais de 10 caracteres.'
+                },
+                esperado: { valido: false, erros: ['Nome deve ter pelo menos 2 caracteres'] }
+            },
+            {
+                id: 'CTU-005',
+                descricao: 'AVL-2 Nome (Mínimo - 2 caracteres)',
+                dados: {
+                    nome: 'An',
+                    email: 'teste@email.com',
+                    assunto: 'Assunto válido',
+                    mensagem: 'Mensagem válida com mais de 10 caracteres.'
+                },
+                esperado: { valido: true, erros: [] }
+            },
+            
+            // Análise de Valor Limite - Assunto
+            {
+                id: 'CTU-006',
+                descricao: 'AVL-3 Assunto (Abaixo Min - 4 caracteres)',
+                dados: {
+                    nome: 'João Silva',
+                    email: 'teste@email.com',
+                    assunto: 'Assu',
+                    mensagem: 'Mensagem válida com mais de 10 caracteres.'
+                },
+                esperado: { valido: false, erros: ['Assunto deve ter pelo menos 5 caracteres'] }
+            },
+            {
+                id: 'CTU-007',
+                descricao: 'AVL-4 Assunto (Mínimo - 5 caracteres)',
+                dados: {
+                    nome: 'João Silva',
+                    email: 'teste@email.com',
+                    assunto: 'Assun',
+                    mensagem: 'Mensagem válida com mais de 10 caracteres.'
+                },
+                esperado: { valido: true, erros: [] }
+            },
+            
+            // Análise de Valor Limite - Mensagem
+            {
+                id: 'CTU-008',
+                descricao: 'AVL-5 Mensagem (Abaixo Min - 9 caracteres)',
+                dados: {
+                    nome: 'João Silva',
+                    email: 'teste@email.com',
+                    assunto: 'Assunto válido',
+                    mensagem: 'Mensagem.'
+                },
+                esperado: { valido: false, erros: ['Mensagem deve ter pelo menos 10 caracteres'] }
+            },
+            {
+                id: 'CTU-009',
+                descricao: 'AVL-6 Mensagem (Mínimo - 10 caracteres)',
+                dados: {
+                    nome: 'João Silva',
+                    email: 'teste@email.com',
+                    assunto: 'Assunto válido',
+                    mensagem: 'Mensagem a'
+                },
+                esperado: { valido: true, erros: [] }
+            },
+            
+            // Teste extra - Email inválido
+            {
+                id: 'CTU-010',
+                descricao: 'Email com formato inválido',
+                dados: {
+                    nome: 'Maria Santos',
+                    email: 'maria.email.com',
+                    assunto: 'Problema no login',
+                    mensagem: 'Não consigo fazer login no sistema, preciso de ajuda.'
+                },
+                esperado: { valido: false, erros: ['Email deve ter um formato válido'] }
+            }
+        ];
+
+        // Função para executar todos os testes
+        function executarTodosTestes() {
+            const corpoTabela = document.getElementById('corpoTabelaTestes');
+            corpoTabela.innerHTML = '';
+            
+            casosTeste.forEach(ct => {
+                const resultado = validarFormularioContato(
+                    ct.dados.nome,
+                    ct.dados.email,
+                    ct.dados.assunto,
+                    ct.dados.mensagem
+                );
+                
+                // Comparação profunda dos resultados
+                const validoIgual = resultado.valido === ct.esperado.valido;
+                const errosIguais = JSON.stringify(resultado.erros.sort()) === JSON.stringify(ct.esperado.erros.sort());
+                const status = validoIgual && errosIguais ? 'PASS' : 'FAIL';
+                
+                const linha = document.createElement('tr');
+                linha.innerHTML = `
+                    <td>${ct.id}</td>
+                    <td>${ct.descricao}</td>
+                    <td>
+                        <strong>Nome:</strong> ${typeof ct.dados.nome === 'string' ? `"${ct.dados.nome}"` : ct.dados.nome}<br>
+                        <strong>Email:</strong> ${typeof ct.dados.email === 'string' ? `"${ct.dados.email}"` : ct.dados.email}<br>
+                        <strong>Assunto:</strong> ${typeof ct.dados.assunto === 'string' ? `"${ct.dados.assunto}"` : ct.dados.assunto}<br>
+                        <strong>Mensagem:</strong> ${typeof ct.dados.mensagem === 'string' ? `"${ct.dados.mensagem.substring(0, 30)}..."` : ct.dados.mensagem}
+                    </td>
+                    <td>${ct.esperado.valido ? 'VÁLIDO' : 'INVÁLIDO'}<br>Erros: ${ct.esperado.erros.join(', ') || 'Nenhum'}</td>
+                    <td>${resultado.valido ? 'VÁLIDO' : 'INVÁLIDO'}<br>Erros: ${resultado.erros.join(', ') || 'Nenhum'}</td>
+                    <td class="${status.toLowerCase()}">${status}</td>
+                `;
+                
+                corpoTabela.appendChild(linha);
+            });
+        }
+
+        // Executar testes automaticamente ao carregar a página
+        window.onload = function() {
+            executarTodosTestes();
+        };
+    </script>
+</body>
+</html>
